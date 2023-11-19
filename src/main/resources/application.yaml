@@ -1,0 +1,75 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+
+  thymeleaf:
+    cache: false
+
+  devtools:
+    livereload:
+      enabled: true
+    remote:
+      restart:
+        enabled: false
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+  freemarker:
+    cache: false
+
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/trend?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: root
+    password: wls1543
+
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+
+    show-sql: true
+    open-in-view: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        format_sql: true
+
+oauth:
+  naver:
+    client-id: tam_saeJxQU2ao5etxe6
+    secret: D1MN64u_l_
+    url:
+      auth: https://nid.naver.com/oauth2.0
+      api: https://openapi.naver.com
+    redirect-url: http://localhost:8080/oauth/naver
+
+  kakao:
+    client-id: 788f6ac621467ff5d5e5384ae2e114ba
+    url:
+      auth: https://kauth.kakao.com
+      api: https://kapi.kakao.com
+    redirect-url: http://localhost:8080/oauth/kakao
+
+naver-apis:
+  shopping-in-site:
+    req-url: https://openapi.naver.com/v1/datalab/shopping
+
+  ad:
+    service-url: https://api.searchad.naver.com
+    customer-id: 2964634
+    access-license: 01000000009f775750a5d6b4096e4ad404164d7f9202be71818cdfef566919cee17e8d102d
+    secret: AQAAAACfd1dQpda0CW5K1AQWTX+SZcuiNoGLtRXF5GmTL/1bYg==
+
+    typo:
+      req-url: https://openapi.naver.com/v1/search/errata.json
+
+youtube:
+  api-key: AIzaSyDTBR8BnAYmgiLu7npoTmwWPThnOoj0-8I
+
+domeggook:
+  api-key: a607f457bbd5b609917185491d649379
+  service-url: https://domeggook.com/ssl/api/

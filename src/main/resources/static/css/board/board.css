@@ -1,0 +1,84 @@
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f8f8;
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+        }
+
+        article {
+            min-height: calc(100vh - 5vh);
+        }
+
+        .container {
+            position: relative;
+            width: 70%;
+            height: 50%;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 110px;
+            padding: 20px;
+
+        }
+
+        .title {
+            text-align: left;
+        }
+
+        .board-info {
+            text-align: right;
+        }
+
+        .info-text {
+            font-size: 13px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .button-area {
+            text-align: right;
+        }
+
+        .context {
+            height: 200px;
+            margin-top: 30px;
+        }
+
+        #comment-area {
+            display: flex;
+        }
+
+        #comment-input {
+            width: 85%;
+            padding: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #comment_cnt {
+            text-align: right;
+            color: #666;
+        }
+
+        .gal-name {
+            margin-bottom: 5px;
+        }
+
+        .comment-email {
+            width: 15%;
+            font-size: 10px;
+        }
+
+        .comment-context {
+            margin-left: 15px;
+            width: 70%;
+        }
+
+        .comment-date {
+            margin-left: 10px;
+            margin-right: 10px;
+            font-size: 8px;
+            width: 10%;
+        }

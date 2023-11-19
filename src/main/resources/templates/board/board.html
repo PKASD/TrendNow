@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <div th:replace="/fragments/header.html :: fragment-header"></div>
+    <!--css-->
+    <link rel="stylesheet" type="text/css" href="/css/board/board.css">
+</head>
+<body>
+<!--헤더 영역-->
+<div th:replace="/fragments/header.html :: fragment-nav"></div>
+
+<article class="d-flex justify-content-center align-items-center">
+    <section class="container">
+        <!--글 정보 영역-->
+        <div>
+            <div class="title">
+                <div class="gal-name">
+                    <a href="./" th:text="${board.gallery.name}"></a>
+                </div>
+                <h4 th:text="${board.title}"></h4>
+                <div class="board-info">
+                    <span class="info-text">작성자 : </span><span th:text="${board.user.email}"></span>
+                    <span class="info-text">조회수 : </span><span th:text="${board.viewCount}"></span>
+                    <span class="info-text">작성일 : </span><span
+                        th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}"></span>
+                </div>
+                <hr>
+            </div>
+            <div class="context">
+                <p th:text="${board.context}">내용</p>
+            </div>
+        </div>
+        <!--글 수정 버튼 영역-->
+        <div th:if="${user.email eq board.user.email}" class="button-area">
+            <button th:attr="data-board-idx=${board.idx}"
+                    onclick="deleteBoard(this.getAttribute('data-board-idx'))">글 삭제
+            </button>
+            <a th:href="@{/gallery/{galleryName}/{boardNum}/update(galleryName=${board.gallery.name},boardNum=${board.idx})}">
+                <button>글 수정</button>
+            </a>
+        </div>
+        <hr>
+
+        <!--댓글 작성 영역-->
+        <div>
+            <form method="post" id="comment-area"
+                  th:action="@{'/gallery'+'/'+${board.gallery.name} +'/'+${board.idx} + '/comment-write'}">
+                <textarea style="resize:none" rows="1" id="comment-input" name="context"
+                          placeholder="댓글을 작성해주세요"></textarea>
+                <button id="add_comment" type="submit">댓글 작성</button>
+                <p id="comment_cnt">(0 / 30)</p>
+            </form>
+        </div>
+        <hr>
+        <!--작성된 댓글 영역-->
+        <div th:each="comment : ${comments}">
+            <span class="comment-email" th:text="${comment.user.email}">/</span>
+            <span class="comment-context" th:text="${comment.context}">/</span>
+            <span class="comment-date" th:text="${#temporals.format(comment.createdAt, 'MM-dd HH:mm:ss')}"></span>
+            <span th:if="${user.email eq comment.user.email}">
+                    <button th:attr="data-comment-idx=${comment.idx}"
+                            onclick="deleteComment(this.getAttribute('data-comment-idx'))">
+                        댓글 삭제
+                    </button>
+                </span>
+        </div>
+    </section>
+</article>
+<!--푸터 영역-->
+<div class="footer" th:replace="/fragments/footer.html :: fragment-footer"></div>
+<script>
+  function deleteBoard(idx) {
+        if (confirm("이 글을 삭제하시겠습니까?")) {
+            boardNum = BigInt(idx);
+            const deleteUrl = boardNum + '/delete';
+
+            fetch(deleteUrl, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                   window.location.href = './'
+                }
+            })
+            .catch(error => {
+                console.error('에러 발생:', error);
+            });
+        }
+    }
+
+  function deleteComment(comIdx) {
+        if (confirm("이 댓글을 삭제하시겠습니까?")) {
+            comNum = BigInt(comIdx);
+            const deleteUrl = '/gallery/comment-delete/' + comIdx;
+
+            fetch(deleteUrl, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                   window.location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('에러 발생:', error);
+            });
+        }
+  }
+
+    $('#add_comment').on("click", function(e) {
+       let c = $('textarea[name="context"]').val();
+
+        // 댓글이 비어 있는지 확인
+        if (c.trim() === "") {
+            e.preventDefault();
+            alert("댓글 내용을 입력하세요."); // 알림 메시지 표시
+            return;
+        }
+
+        let obj = {
+            'context': c
+        };
+
+        $.ajax({
+            method: "POST",
+            url: 'comment-write',
+            data: JSON.stringify(obj),
+            contentType: 'application/json',
+            success: function(data, status, xhr) {
+                console.log("댓글 저장됨 idx: " + data.idx);
+            },
+            error: function(xhr, status, error) {
+                console.log("댓글 저장 실패: " + error);
+            }
+        });
+    });
+
+    $(document).ready(function() {
+        $('#comment-input').on('keyup', function() {
+            $('#comment_cnt').html("("+$(this).val().length+" / 30)");
+
+            if($(this).val().length > 30) {
+                $(this).val($(this).val().substring(0, 30));
+                $('#comment_cnt').html("(30 / 30)");
+            }
+        });
+     });
+
+</script>
+</body>
+</html>

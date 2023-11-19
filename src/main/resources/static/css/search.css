@@ -1,0 +1,50 @@
+    body {
+        font-family: 'Noto Sans KR', sans-serif;
+        text-align: center;
+    }
+
+    section {
+         min-height: calc(100vh - 5vh);
+    }
+
+    input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 30px #fff inset;
+        -webkit-text-fill-color: #000;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    .bar {
+        margin: 0 auto;
+        width: 500px;
+        border-radius: 30px;
+        border: 1px solid #dcdcdc;
+        text-align: center;
+    }
+
+    .bar:hover {
+        box-shadow: 1px 1px 8px 1px #dcdcdc;
+    }
+
+    .bar:focus-within {
+        box-shadow: 1px 1px 8px 1px #dcdcdc;
+        outline:none;
+    }
+
+    .search-bar {
+        height:45px;
+        border:none;
+        width:425px;
+        font-size:16px;
+        outline: none;
+    }
+
+    #site-logo {
+        margin-top: 300px;
+
+    }

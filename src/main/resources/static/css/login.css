@@ -1,0 +1,40 @@
+    body {
+        text-align: center;
+        background-color: #eff0f5;
+        height:100%
+    }
+
+    article {
+         min-height: calc(41vh - 5vh);
+    }
+
+    .container {
+        margin-top:250px;
+    }
+
+    .loginBtn {
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+    }
+
+    .btn-area {
+        margin-top: 100px;
+    }
+
+    #naver-login {
+        margin-bottom: 10px;
+    }
+
+    #kakao-login {
+        padding-top: 5px;
+    }
+
+    /* 사이트 로고 스타일*/
+    #site-logo {
+        width: 350px;
+        height: 100px;
+        margin-top: 200px;
+        top: 20px;
+    }

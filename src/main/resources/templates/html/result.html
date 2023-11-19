@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>검색 결과 창</title>
+    <div th:replace="/fragments/header.html :: fragment-header"></div>
+    <!-- 차트 스크립트 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="/css/result.css">
+</head>
+<body>
+<article class="sidebar"></article>
+<article class="content">
+    <div th:replace="/fragments/header.html :: fragment-nav"></div>
+
+    <!-- 로고이미지를 누르면 메인으로 -->
+    <p style="margin-top: 60px;">
+        <a href="/search">
+            <img id="site-logo" src="/img/TrendNowLogo.png">
+        </a>
+    </p>
+
+    <!-- 검색기능을 결과창에도 추가 -->
+    <section id="search">
+        <form action="/result" method="get">
+            <label for="keyword"> </label>
+            <input type="text" id="keyword" name="keyword" th:value="${searchKeyword}" placeholder="키워드를 입력하세요.">
+            <button type="submit">검색</button>
+        </form>
+    </section>
+
+    <!-- 차트 검색 조건 섹션 -->
+    <section class="search-container">
+        <form class="search-form">
+            <div class="search-field">
+                <label class="searchFilter-label">분야</label>
+                <select class="search-input" id="category" name="category">
+                    <option value="패션의류" data-cid="50000000">패션의류</option>
+                    <option value="패션잡화" data-cid="50000001">패션잡화</option>
+                    <option value="화장품/미용" data-cid="50000002">화장품/미용</option>
+                    <option value="디지털/가전" data-cid="50000003">디지털/가전</option>
+                    <option value="가구/인테리어" data-cid="50000004">가구/인테리어</option>
+                    <option value="출산/육아" data-cid="50000005">출산/육아</option>
+                    <option value="식품" data-cid="50000006">식품</option>
+                    <option value="스포츠/레저" data-cid="50000007">스포츠/레저</option>
+                    <option value="생활/건강" data-cid="50000008">생활/건강</option>
+                    <option value="여가/생활편의" data-cid="50000009">여가/생활편의</option>
+                    <option value="면세점" data-cid="50000010">면세점</option>
+                    <option value="도서" data-cid="50005542">도서</option>
+                </select>
+            </div>
+
+            <div class="search-field">
+                <label class="searchFilter-label">기간</label>
+                <!-- 타임유닛 필터 -->
+                <select class="search-input" id="timeUnit" name="timeUnit">
+                    <option value="date">일간</option>
+                    <option value="week">주간</option>
+                    <option value="month">월간</option>
+                </select>
+                <!-- 검색기간 필터 -->
+                <select class="search-input start-year-select year-select" id="startDate-year"
+                        onchange="updateDayOptions()">
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                </select>
+                <select class="search-input start-month-select month-select" id="startDate-month"
+                        onchange="updateDayOptions()">
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+                <select class="search-input start-day-select day-select" id="startDate-day"></select>
+
+                <span>~</span>
+
+                <!-- 년, 월, 일 동일하게 반복 -->
+                <select class="search-input end-year-select year-select" id="endDate-year"
+                        onchange="updateDayOptions()">
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                </select>
+                <select class="search-input end-month-select month-select" id="endDate-month"
+                        onchange="updateDayOptions()">
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+                <select class="search-input end-day-select day-select" id="endDate-day"></select>
+            </div>
+
+            <!-- 성별 필터 -->
+            <div>
+                <label class="searchFilter-label">성별</label>
+                <select class="search-input" id="gender" name="gender">
+                    <option value="">전체</option>
+                    <option value="f">여성</option>
+                    <option value="m">남성</option>
+                </select>
+
+                <!-- 나이 필터 -->
+                <label class="searchFilter-label">나이</label>
+                <!--<input type="checkbox" class="search-input" name="age" value="">전체-->
+                <input type="checkbox" class="search-input" name="age" value="10">10대
+                <input type="checkbox" class="search-input" name="age" value="20">20대
+                <input type="checkbox" class="search-input" name="age" value="30">30대
+                <input type="checkbox" class="search-input" name="age" value="40">40대
+                <input type="checkbox" class="search-input" name="age" value="50">50대
+                <input type="checkbox" class="search-input" name="age" value="60">60대
+            </div>
+            <button id="search-button" style="margin-left:10px">조회</button>
+        </form>
+    </section>
+
+    <!-- 차트 표시 섹션 -->
+    <section id="chartContainer">
+        <!-- 분야통계 라인 차트 -->
+        <div class="chart-container">
+            <canvas id="searchChart" width="200" height="200"></canvas>
+        </div>
+
+        <!-- 쇼핑인사이트 검색어통계 라인 차트 -->
+        <div class="chart-container">
+            <canvas id="clicksChart" width="200" height="200"></canvas>
+        </div>
+
+        <!-- 쇼핑인사 성별 비율 도넛 차트 -->
+        <div class="chart-container">
+            <canvas id="genderChart" width="200" height="200"></canvas>
+        </div>
+
+        <!-- 쇼핑인사 연령대 비율 막대 차트 -->
+        <div class="chart-container">
+            <canvas id="ageChart" width="200" height="200"></canvas>
+        </div>
+    </section>
+
+    <!-- 네이버 광고 검색 결과 섹션 -->
+    <section class="search-naver-ad">
+        <table id="naver-ad">
+            <tr>
+                <th>월간 검색 수(PC)</th>
+                <th>월 평균 클릭 수(PC)</th>
+                <th>월평균 클릭률(PC)</th>
+                <th>월 평균 노출 광고 수</th>
+                <th>경쟁 정도</th>
+            </tr>
+            <tr>
+                <td th:text="${ads.monthlyPcQcCnt}"></td>
+                <td th:text="${ads.monthlyAvePcClkCnt}"></td>
+                <td th:text="${ads.monthlyAvePcCtr}"></td>
+                <td rowspan="3" th:text="${ads.plAvgDepth}"></td>
+                <td rowspan="3" th:text="${ads.compIdx}"></td>
+            </tr>
+            <tr>
+                <th>월간 검색 수(모바일)</th>
+                <th>월 평균 클릭 수(모바일)</th>
+                <th>월 평균 클릭률(모바일)</th>
+            </tr>
+            <tr>
+                <td th:text="${ads.monthlyMobileQcCnt}"></td>
+                <td th:text="${ads.monthlyAveMobileClkCnt}"></td>
+                <td th:text="${ads.monthlyAveMobileCtr}"></td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- 상품 검색 결과 섹션 -->
+    <section class="products">
+        <div class="product-card" th:each="items :${items.domeggook.list.item}">
+            <a th:href="${items.url}">
+                <div class="product-title">
+                    <p th:text="${items.title}"></p>
+                </div>
+                <div class="product-image">
+                    <img th:src="${items.thumb}" width="160" height="160" alt="Product Image">
+                </div>
+                <div class="product-price">
+                    <span th:text="${items.price}"></span>원
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- 네이버 블로그,뉴스, 유튜브 검색 결과 섹션 -->
+    <section id="BNY-container" style="padding-left:5%">
+        <div class="search-result">
+            <h4 class="search-title">블로그 검색 결과</h4>
+            <ul class="result-box">
+                <li th:each="blog : ${blogs.items}">
+                    <a th:href="${blog.link}" th:text="${blog.title}" target="_blank"></a>
+                </li>
+            </ul>
+        </div>
+        <div class="search-result">
+            <h4 class="search-title">뉴스 검색 결과</h4>
+            <ul class="result-box">
+                <li th:each="news : ${news.items}">
+                    <a th:href="${news.link}" th:text="${news.title}" target="_blank"></a>
+                </li>
+            </ul>
+        </div>
+        <div class="search-result">
+            <h4 class="search-title">유튜브 검색 결과</h4>
+            <ul class="result-box">
+                <li th:each="video : ${videos.items}" style="display: flex; align-items: center;">
+                    <div style="margin-right: 10px;">
+                        <img th:src="${video.snippet.thumbnails.highThumbnail.url}" width="160" height="160" alt="videoImg">
+                    </div>
+                    <div style="text-align: center;">
+                        <a th:href="${video.id.videoId}" th:text="${video.snippet.title}" target="_blank"></a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </section>
+</article>
+
+<div class="footer" th:replace="/fragments/footer.html :: fragment-footer"></div>
+
+<article class="right-sidebar"></article>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script th:inline="javascript">
+    // 연도와 월 변경 시 일 수(1~31)선택 옵션 업데이트 함수
+    function updateDayOptions() {
+      const yearSelects = document.querySelectorAll(".year-select");
+      const monthSelects = document.querySelectorAll(".month-select");
+      const daySelects = document.querySelectorAll(".day-select");
+
+      for (let i = 0; i < yearSelects.length; i++) {
+        const yearSelect = yearSelects[i];
+        const monthSelect = monthSelects[i];
+        const daySelect = daySelects[i];
+
+        const selectedYear = yearSelect.value;
+        const selectedMonth = monthSelect.value;
+
+        while (daySelect.firstChild) {
+          daySelect.removeChild(daySelect.firstChild);
+        }
+
+        const lastDay = new Date(selectedYear, selectedMonth, 0).getDate();
+
+        for (let j = 1; j <= lastDay; j++) {
+          const option = document.createElement('option');
+          const dayValue = j.toString().padStart(2, '0');
+          option.value = dayValue;
+          option.textContent = dayValue;
+          daySelect.appendChild(option);
+        }
+      }
+    }
+
+
+</script>
+<script src="js/SISCategory.js?ver=1"></script>
+<script src="js/SISKeyword.js?ver=1"></script>
+<script src="js/SISKeyGender.js?ver=1"></script>
+<script src="js/SISKeyAge.js?ver=1"></script>
+</body>
+</html>

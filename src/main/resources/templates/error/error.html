@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>에러 페이지</title>
+    <div th:replace="/fragments/header.html :: fragment-header"></div>
+    <link rel="stylesheet" type="text/css" href="/css/404error.css">
+</head>
+<body>
+<!--헤더 영역-->
+<div th:replace="/fragments/header.html :: fragment-nav"></div>
+
+<!--페이지 영역-->
+<article class = "page_404">
+    <section class="container">
+        <div>
+            <div class="four_zero_four_bg">
+                <h1>404</h1>
+            </div>
+
+            <div>
+                <h3>Look like you're lost</h3>
+                <p>the page you are looking for not avaible!</p>
+                <a href="/search" class="link_404">Go to Home</a>
+            </div>
+        </div>
+    </section>
+</article>
+
+<!--푸터 영역-->
+<div class="footer" th:replace="/fragments/footer.html :: fragment-footer"></div>
+</body>
+</html>

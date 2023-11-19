@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <div th:replace="/fragments/header.html :: fragment-header"></div>
+    <link rel="stylesheet" type="text/css" href="/css/board/write.css">
+</head>
+<body>
+<div th:replace="/fragments/header.html :: fragment-nav"></div>
+<article>
+    <section class="container">
+        <form method="post" action="/gallery/자유게시판/write" th:object="${board}">
+            <!-- 제목 -->
+            <div>
+                <div class="text_cnt">
+                    <label for="title">제목</label>
+                    <span id="title_cnt">0 / 50</span>
+                </div>
+                <input id="title" type="text" placeholder="제목을 입력하세요." th:field="*{title}">
+                <div class="fieldError" th:if="${#fields.hasErrors()}" th:errors="*{title}"></div>
+                <hr>
+            </div>
+
+            <!-- 내용 -->
+            <div>
+                <div class="text_cnt">
+                    <label for="context">내용</label>
+                    <span id="context_cnt">0 / 500</span>
+                </div>
+                <textarea id="context" name="context" placeholder="내용을 입력하세요."
+                          th:field="*{context}"></textarea>
+                <div class="fieldError" th:if="${#fields.hasErrors('context')}" th:errors="*{context}"></div>
+                <hr>
+            </div>
+
+            <!-- 폼 제출 -->
+            <div style="text-align:center;">
+                <button type="submit">작성</button>
+            </div>
+        </form>
+    </section>
+</article>
+<div class="footer" th:replace="/fragments/footer.html :: fragment-footer"></div>
+<!--<script src="js/write.js?ver=1"></script>-->
+<script>
+    $(document).ready(function() {
+    $('#title').on('keyup', function() {
+        $('#title_cnt').html("("+$(this).val().length+" / 50)");
+
+        if($(this).val().length > 50) {
+            $(this).val($(this).val().substring(0, 50));
+            $('#title_cnt').html("50 / 50");
+        }
+    });
+});
+
+$(document).ready(function() {
+    $('#context').on('keyup', function() {
+        $('#context_cnt').html("("+$(this).val().length+" / 500)");
+
+        if($(this).val().length > 500) {
+            $(this).val($(this).val().substring(0, 500));
+            $('#context_cnt').html("500 / 500");
+        }
+    });
+});
+</script>
+</body>
+</html>

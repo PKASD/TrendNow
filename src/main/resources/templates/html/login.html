@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 페이지</title>
+    <div th:replace="/fragments/header.html :: fragment-header"></div>
+    <!-- 네이버 로그인 스크립트 -->
+    <script type="text/javascript" src="https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js"></script>
+    <!-- 카카오 로그인 스크립트 -->
+    <script type="text/javascript" src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="/css/login.css">
+    <style>
+    button:hover {
+        background-color: #fff;
+    }
+    </style>
+</head>
+<body>
+
+<!-- 사이트 로고 영역 -->
+<section>
+    <img id="site-logo" src="/img/TrendNowLogo.png">
+</section>
+<article class="container">
+    <section class="btn-area">
+        <!-- 네이버 로그인 영역 -->
+        <div id="naver-login">
+            <a href="oauth/naver/login">
+                <button class="loginBtn">
+                    <img src="/img/NaverLoginBtn.png"/>
+                </button>
+            </a>
+        </div>
+
+        <!-- 카카오 로그인 영역 -->
+        <div id="kakao-login">
+            <a href="oauth/kakao/login">
+                <button class="loginBtn">
+                    <img src="/img/KakaoLoginBtn.png"/>
+                </button>
+            </a>
+        </div>
+    </section>
+</article>
+
+<!-- 푸터 영역 -->
+<div th:replace="/fragments/footer.html :: fragment-footer"></div>
+</body>
+</html>

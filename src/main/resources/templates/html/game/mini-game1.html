@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <title>잠수함</title>
+    <style>
+      body {
+          background-color: #000000;
+          margin: 0px;
+      }
+      canvas {
+          background-color: #0099FF;
+          margin-top: 56px;
+          width: 1111px;
+          height: 698px;
+      }
+    </style>
+</head>
+<body>
+<nav class="navbar fixed-top navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/search">Trend Now</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/modify/user-info">마이 페이지</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/gallery/자유게시판">게시판</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        미니 게임
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/mini-game1">잠수함</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/mini-game2">픽셀</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/mini-game3">행성 지키기</a></li>
+                    </ul>
+                </li>
+                <li>
+<!--                    <span class="user-info" th:text="${user.email}"></span>-->
+
+                    <a class="user-info" href="/oauth/logout">
+                        <button>로그아웃</button>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+    <canvas id="canvas" width="800" height="510">
+    </canvas>
+<script type = "text/javascript">
+        //캔버스 객체
+        var canvas;
+        var ctx;
+        var canvasBuffer;
+        var bufferCtx;
+        var threadSpeed = 16;
+
+        // 잠수함
+        var submarine;
+        var sx, sy, sw = 60, sh = 35;
+
+        // 배경 이미지
+        var background;
+
+        // 장애물
+        var enemy = new Array();
+        var enemyColor = ["red", "blue", "white"];
+        var ellapse = 10;
+
+        // 타이머 인스턴스
+        var loopInstance;
+
+        // 게임 상태
+        var STATE_START = false;
+        var STATE_GAMEOVER = false;
+
+        // 키 상태
+        var keyPressed = [];
+
+        // 경과 시간
+        var oldTime;
+        var startTime;
+        var totalTime;
+
+        window.addEventListener("load", initialize, false);
+        window.addEventListener("keydown", getKeyDown, false);
+        window.addEventListener("keyup", getKeyUp, false);
+
+        function initialize()
+        {
+            canvas = document.getElementById("canvas");
+            if(canvas==null || canvas.getContext==null) return;
+            ctx = canvas.getContext("2d");
+
+            canvasBuffer= document.createElement("canvas");
+            canvasBuffer.width = canvas.width;
+            canvasBuffer.height = canvas.height;
+            bufferCtx = canvasBuffer.getContext("2d");
+
+            // 게임시작 메세지
+            startMessage();
+
+            // 이미지 설정
+            setImage();
+
+            // 반복 동작 설정
+            loopInstance = setInterval(update, threadSpeed);
+        }
+        // 주기적으로 반복되는 루틴
+        function update()
+        {
+            if((keyPressed[13] == true) && !STATE_START) //enter
+            {
+                startGame();
+            }
+            if (keyPressed[38])
+            {
+                sy -= 3;
+                angle = 0;
+            }
+            if (keyPressed[40])
+            {
+                sy += 3;
+                angle = 180;
+            }
+            if (keyPressed[37])
+            {
+                sx -= 3;
+                angle = 270;
+            }
+            if (keyPressed[39])
+            {
+                sx += 3;
+                angle = 90;
+            }
+            if (keyPressed[32] == true)
+            {
+                document.location.reload();
+                startGame();
+            }
+
+            // 장애물의 이동
+            moveObstacle(ellapse);
+            drawAll();
+        }
+
+        function moveObstacle(ellapse)
+        {
+            // 장애물의 이동
+            for (var i = 0; i < 60; i++)
+            {
+                var mx = enemy[i].vx * ellapse / 1000;
+                var my = enemy[i].vy * ellapse / 1000;
+                enemy[i].x += mx;
+                enemy[i].y += my;
+                if (enemy[i].x > canvas.width) enemy[i].x=0;
+                if (enemy[i].x < 0) enemy[i].x=canvas.width;
+                if (enemy[i].y > canvas.height) enemy[i].y=0;
+                if (enemy[i].y < 0) enemy[i].y=canvas.height;
+
+                // 충돌 검사
+                crashObstacle(i);
+            }
+        }
+        function crashObstacle(index)
+        {
+            var mx = enemy[index].x;
+            var my = enemy[index].y;
+            if (mx > sx-sw/2 && mx < sx+sw/2 && my > sy-sh/2 && my <
+            sy+sh/2)
+            {
+                STATE_GAMEOVER = true;
+            }
+        }
+
+
+        function drawAll()
+        {
+            if(!STATE_START)
+            {
+                return;
+            }
+            else if(STATE_GAMEOVER)
+            {
+                stopGame();
+                drawText(ctx, "Game Over", canvas.width/2, canvas.height/2
+                - 60, "bold 30px arial", "#ffff00", "center", "top");
+                drawText(ctx, "Spacebar to Restart", canvas.width/2,
+                canvas.height/2 - 20, "bold 25px arial", "#ffffff",
+                "center", "top");
+            }
+            else
+            {
+                // 배경 이미지 출력
+                drawBk ();
+                // 잠수함 출력
+                drawPlayer ();
+                ctx.drawImage(canvasBuffer, 0, 0);
+                // 장애물 출력
+                drawObstacle();
+                // 경과 시간 출력
+                totalTime = (getTime() - startTime);
+                drawText(ctx, totalTime, canvas.width - 10, 10, "20px arial", "yellow", "right", "top");
+            }
+        }
+
+        // 장애물 출력
+        function drawObstacle ()
+        {
+            for (var i = 0; i < 60; i++)
+            {
+                ctx.beginPath();
+                ctx.arc(enemy[i].x, enemy[i].y,5,0,2*Math.PI);
+                ctx.fillStyle=enemyColor[enemy[i].color];
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        function stopGame()
+        {
+            STATE_START = false;
+        }
+        // 잠수함 유닛 출력
+        function drawPlayer()
+        {
+            bufferCtx.drawImage(submarine, sx-sw/2, sy-sh/2);
+        }
+        // 게임 이미지 출력
+        function drawBk ()
+        {
+            bufferCtx.drawImage(background, 0, 0);
+        }
+
+        // 현재 시간 구함
+        function getTime()
+        {
+            var date = new Date();
+            var time = date.getTime();
+            delete date;
+            return time;
+        }
+
+        function startGame()
+        {
+            // 게임 시작 상태
+            STATE_START = true;
+            // 캐릭터의 처음 위치
+            sx = canvas.width/2 -18;
+            sy = canvas.height/2 -18;
+            sw = 60;
+            sh = 35;
+
+            // 장애물 생성
+            createObstacle ();
+
+            // 현재 시간 저장
+            startTime = getTime();
+        }
+
+        function createObstacle()
+        {
+            enemy.length = 0;
+            for (var i = 0; i < 60; i++)
+            {
+                enemy.push({
+                    x:Math.random() * canvas.width,
+                    y: (i < 60/2 ? 20 : canvas.height-20),
+                    vx:Math.random() * 200 - 100,
+                    vy:Math.random() * 200 - 100,
+                    color:Math.floor(Math.random() * 5)
+                });
+            }
+        }
+
+        function getKeyDown(event)
+        {
+            keyPressed[event.keyCode] = true;
+        }
+
+        function getKeyUp(event)
+        {
+            keyPressed[event.keyCode] = false;
+        }
+
+        function setImage()
+        {
+            submarine = new Image();
+            submarine.src = "https://i.imgur.com/zo8KwYh.png";
+            background = new Image();
+            background.src = "https://search.pstatic.net/sunny/?src=https%3A%2F%2Fimg2.yna.co.kr%2Fetc%2Finner%2FKR%2F2022%2F07%2F15%2FAKR20220715139400017_02_i_P4.jpg&type=sc960_832";
+        }
+
+        function startMessage()
+        {
+            drawText(ctx, "Enter to Start", canvas.width/2, canvas.
+            height/2 - 60, "bold 30px arial", "#ffff00", "center", "top");
+            drawText(ctx, "조작 : 방향키 ← ↑ → ↓", canvas.width/2, canvas.
+            height/2 -20, "bold 20px arial", "#ffffff", "center", "top");
+        }
+        function drawText(ctx, text, x, y, font, color, align, base)
+        {
+            if (font != undefined) ctx.font = font;
+            if (color != undefined) ctx.fillStyle = color;
+            if (align != undefined) ctx.textAlign = align;
+            if (base != undefined) ctx.textBaseline = base;
+            ctx.fillText(text, x, y);
+        }
+    </script>
+</body>
+</html>

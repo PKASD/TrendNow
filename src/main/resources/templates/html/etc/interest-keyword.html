@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>관심사 등록 페이지</title>
+</head>
+<body>
+<h3>회원님 환영합니다.  관심키워드를 등록해주세요.</h3>
+
+<div>
+    <form action="/guest-search" method="get" style="display: inline-block;">
+        <button type="submit">나는 키워드 보러 갈랭</button>
+    </form>
+</div>
+
+<form id="signupForm">
+    <label>성별:</label>
+    <input type="radio" name="gender" value="여성"> 여성
+    <input type="radio" name="gender" value="남성"> 남성
+    <br>
+    <label>연령:</label>
+    <select name="age">
+        <option value="10대">10대</option>
+        <option value="20대">20대</option>
+        <option value="30대">30대</option>
+        <option value="40대">40대</option>
+        <option value="50대">50대 이상</option>
+    </select>
+    <br>
+    <label>관심 키워드1:</label>
+    <input type="text" name="interest1">
+    <br>
+    <label>관심 키워드2:</label>
+    <input type="text" name="interest2">
+    <br>
+    <label>관심 키워드3:</label>
+    <input type="text" name="interest3">
+    <br>
+    <label>관심 키워드4:</label>
+    <input type="text" name="interest4">
+    <br>
+    <label>관심 키워드5:</label>
+    <input type="text" name="interest5">
+    <br>
+    <button type="button" onclick="saveFormData()">저장</button>
+</form>
+
+<script>
+    function saveFormData() {
+      var form = document.getElementById("signupForm");
+      var formData = {
+        gender: form.gender.value,
+        age: form.age.value,
+        interest1: form.interest1.value,
+        interest2: form.interest2.value,
+        interest3: form.interest3.value,
+        interest4: form.interest4.value,
+        interest5: form.interest5.value
+      };
+
+      // 여기서는 간단히 콘솔에 출력하도록 했습니다.
+      console.log("저장된 데이터:", formData);
+    }
+  </script>
+</body>
+</html>

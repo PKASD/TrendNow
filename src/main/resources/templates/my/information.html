@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <title>유저 정보 수정</title>
+    <style>
+        h2 {
+            margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar fixed-top navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/search">Trend Now</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/modify/user-info">마이 페이지</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/gallery/자유게시판">게시판</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        미니 게임
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/mini-game1">잠수함</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/mini-game2">픽셀</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/mini-game3">행성 지키기</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="user-info" th:text="${user.email}"></span>
+
+                    <a class="user-info" href="/oauth/logout">
+                        <button>로그아웃</button>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<h2>정보 수정</h2>
+<form id="userInfoForm" action="/modify/gender-age" method="post" onsubmit="submitForm(event)">
+    <input type="radio" name="gender" value="FEMALE" th:checked="${user.gender == 'FEMALE'}"> 여성
+    <input type="radio" name="gender" value="MALE" th:checked="${user.gender == 'MALE'}"> 남성 <br>
+
+    <select name="ages" th:value="${user.ages}">
+        <option value="10대">10대</option>
+        <option value="20대">20대</option>
+        <option value="30대">30대</option>
+        <option value="40대">40대</option>
+        <option value="50대">50대</option>
+        <option value="60대 이상">60대 이상</option>
+    </select>
+    <br>
+
+    <input type="submit" value="수정완료">
+</form>
+<br>
+
+<h2>관심 키워드 추가</h2>
+<div>
+    <input type="text" id="keywordInput" placeholder="키워드를 입력하세요.">
+    <button id="addButton" type="submit">키워드 추가</button>
+    <ul id="keywordList"></ul>
+</div>
+<script>
+    function submitForm(event) {
+        event.preventDefault();
+
+        var formData = $("#userInfoForm").serialize();
+
+        $.post("/modify/gender-age", formData, function (data) {
+            // 여기서 수정 성공 처리 (필요한 경우)
+            showAlert("정보 수정이 완료되었습니다.");
+        }).fail(function (error) {
+            showAlert("정보 수정 중 오류가 발생했습니다.");
+            console.error("An error occurred:", error);
+        });
+    }
+
+    function showAlert(message) {
+        alert(message);
+    }
+
+    // 키워드 추가 버튼 클릭 처리
+    $("#addButton").click(function () {
+        let k = $("#keywordInput").val().trim();
+
+        if (k !== "") {
+            var obj = {
+                'keyword': k
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/modify/add",
+                data: JSON.stringify(obj),
+                contentType: 'application/json',
+                success: function () {
+                    console.log("Data saved");
+                    myKeywordList();
+                },
+                error: function (xhr, status, error) {
+                    console.log("keyword add fail!");
+                }
+            });
+        }
+    });
+
+    function myKeywordList() {
+    $.get('/modify/list', function (data) {
+        if (data.length > 0) {
+            $('#keywordList').empty(); // 기존 목록 삭제
+
+            let tb = $('<table>');
+
+            for (let item in data) {
+                let idx = data[item].idx;
+                let keyword = data[item].keyword;
+
+                let htmlStr = '';
+                htmlStr += '<tr>';
+                htmlStr += '<td>' + keyword + '</td>'; // 키워드 데이터 추가
+                htmlStr += '<td><button class="delete-button">삭제</button></td>';
+                htmlStr += '</tr>';
+
+                tb.append(htmlStr);
+            }
+
+            $('#keywordList').append(tb);
+
+            }
+        });
+    }
+
+    // 삭제버튼 누를 시
+    $(document).on('click', '.delete-button', function () {
+        let listItem = $(this).parent(); // 부모 li 요소
+        let keywordIndex = listItem.data('keyword-index'); // 해당 키워드의 인덱스
+        deleteKeyword(keywordIndex, listItem);
+    });
+
+
+    function deleteKeyword(keywordIndex, listItem) {
+        $.ajax({
+            type: "DELETE",
+            url: "/modify/delete/" + keywordIndex,
+            success: function (response) {
+                // 서버에서 키워드 삭제가 성공한 경우에만 아래 동작 수행
+                listItem.remove(); // 리스트 아이템 삭제
+            },
+            error: function (xhr, status, error) {
+                console.error("An error occurred:", error);
+            }
+        });
+    }
+
+
+</script>
+</body>
+</html>

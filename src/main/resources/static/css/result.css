@@ -1,0 +1,190 @@
+    body {
+        font-family: 'Noto Sans KR', sans-serif;
+        text-align: center;
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    ul {
+        list-style: none;
+    }
+
+    .content {
+        width: 70%;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+        min-height: calc(100vh - 5vh);
+    }
+
+    .sidebar, .right-sidebar {
+        width: 15%;
+        float: left;
+    }
+
+    .right-sidebar {
+        float: right;
+    }
+
+    /* Product Layout */
+    .products {
+        padding: 3% 10% 0% 10%;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+    }
+
+    .product-card {
+        display: flex;
+        flex-direction: column;
+        padding: 2%;
+        flex: 1 16%;
+        background-color: #f2f2f2;
+        box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.25);
+    }
+
+    .product-title {
+        height: 50px;
+        overflow: hidden;
+    }
+
+    .product-info {
+        margin-top: auto;
+        padding-top: 20px;
+        text-align: center;
+    }
+
+    .search-result {
+        padding: 3% 5% 0% 5%;
+    }
+
+    .search-title {
+        font-weight: bold;
+        font-style: italic;
+    }
+
+    .result-box {
+        padding: 20px;
+        border: 1px solid #ddd;
+        background-color: #f2f2f2;
+        box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.25);
+    }
+
+    .result-box li {
+        padding: 3px;
+    }
+
+    #search {
+        width: 100%;
+    }
+
+    #keyword {
+        width: 50%;
+    }
+
+    #naver-ad {
+        border-collapse: collapse;
+        width: 90%;
+    }
+
+    #naver-ad th, #naver-ad td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+
+    #naver-ad th {
+        background-color: #f2f2f2;
+    }
+
+    .search-naver-ad {
+        margin: 0 7% 0% 7%;
+        padding: 20px;
+    }
+
+    /* Chart Container Style */
+    .chart-container {
+        display: inline-block;
+        margin: 10px;
+    }
+
+    /* Input Box Color */
+    input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 30px #fff inset;
+        -webkit-text-fill-color: #000;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* Center Ads and Dome */
+    #naver-ad, #dome {
+        margin: 0 auto;
+    }
+
+    #dome ul {
+        list-style: none;
+    }
+
+    /* Blog, News, YouTube Container */
+    #BNY-container {
+        margin-top: 20px;
+        text-align: left;
+    }
+
+    .search-container {
+        width: 80%;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #f9f9f9;
+    }
+
+    .search-form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .search-field {
+        margin-right: 20px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .searchFilter-label {
+        font-weight: bold;
+        margin-right: 5px;
+    }
+
+    .search-input {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-right: 5px;
+    }
+
+    .search-button {
+        padding: 5px 10px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    input{
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 1px;
+    }
